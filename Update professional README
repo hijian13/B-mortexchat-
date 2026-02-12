@@ -1,0 +1,38 @@
+# B-MortexChat 💬
+
+B-MortexChat is a modern real-time chat web application built using HTML, CSS, JavaScript and Firebase.
+
+## 🚀 Features
+
+- ✅ Real-time Group Chat
+- ✅ Create Posts
+- ✅ Like System
+- ✅ Simple AI Bot
+- ✅ Clean UI Design
+- ✅ Firebase Firestore Integration
+
+## 🛠 Technologies Used
+
+- HTML5
+- CSS3
+- JavaScript (ES6 Modules)
+- Firebase Firestore
+- Firebase Storage
+
+## 📦 Installation
+
+1. Clone the repository
+2. Open index.html in your browser
+3. Add your Firebase configuration inside the script
+
+## 🔥 How It Works
+
+The application connects to Firebase Firestore to store and retrieve messages and posts in real time using onSnapshot listeners.
+
+## 👤 Author
+
+Developed by hijian13
+
+---
+
+⭐ Feel free to fork and improve this project!
