@@ -94,98 +94,56 @@ input{
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, increment } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getDatabase, ref, push, onValue } 
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "SHIRA_API_KEY",
-  authDomain: "SHIRA_AUTH",
-  projectId: "SHIRA_PROJECT_ID",
-  storageBucket: "SHIRA_STORAGE",
-  messagingSenderId: "SHIRA_ID",
-  appId: "SHIRA_APP"
+apiKey:"AIzaSyD0R_RFe0T-gWv867QhL3ROEVwBOl4EZcA",
+authDomain: "b-mortexchat-fe518.firebaseapp.com",
+projectId: "b-mortexchat-fe518",
+storageBucket: "b-mortexchat-fe518.firebasestorage.app",
+ messagingSenderId: "216206912732", appId: "1:216206912732:web:24c12bb87d1d88c43e1819",
+  measurementId: "G-BB3XXD82BW",
+ databaseURL: "https://b-mortexchat-fe518-default-rtdb.firebaseio.com"
 };
-
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
+const db = getDatabase(app);
 const usernameInput = document.getElementById("username");
-
 window.sendMessage = async function(){
 
   const text = document.getElementById("messageInput").value;
   const username = usernameInput.value || "Anonymous";
 
-  if(text === "") return;
-
-  await addDoc(collection(db,"groupChat"),{
-    username,
-    text,
-    createdAt:new Date()
-  });
-
-  if(text.toLowerCase().includes("ai")){
-    await addDoc(collection(db,"groupChat"),{
-      username:"AI Bot",
-      text:"Ndakwumva 🙂 ikibazo cawe niki?",
-      createdAt:new Date()
-    });
-  }
-
-  document.getElementById("messageInput").value="";
+if (username === "") {
+  alert("Andika username yawe!");
+  return;
 }
 
-onSnapshot(collection(db,"groupChat"),(snapshot)=>{
+if (text === "") return;
+  
+
+  await push(ref(db, "groupChat"), {
+    username: username,
+    text: text,
+    createdAt: new Date().toISOString()
+  });
+
+  document.getElementById("messageInput").value = "";
+};
+onValue(ref(db, "groupChat"), (snapshot) => {
   const messagesDiv = document.getElementById("messages");
-  messagesDiv.innerHTML="";
-  snapshot.forEach(doc=>{
-    const data = doc.data();
+  messagesDiv.innerHTML = "";
+
+  snapshot.forEach((childSnapshot) => {
+    const data = childSnapshot.val();
+
     const div = document.createElement("div");
-    div.className="message";
-    div.innerHTML="<b>"+data.username+"</b>: "+data.text;
+    div.className = "message";
+    div.innerHTML = "<b>" + data.username + "</b>: " + data.text;
+
     messagesDiv.appendChild(div);
   });
-});
-
-window.createPost = async function(){
-  const text = document.getElementById("postInput").value;
-  const username = usernameInput.value || "Anonymous";
-
-  if(text==="") return;
-
-  await addDoc(collection(db,"posts"),{
-    username,
-    text,
-    likes:0,
-    createdAt:new Date()
-  });
-
-  document.getElementById("postInput").value="";
-}
-
-onSnapshot(collection(db,"posts"),(snapshot)=>{
-  const postsDiv = document.getElementById("posts");
-  postsDiv.innerHTML="";
-  snapshot.forEach(d=>{
-    const data = d.data();
-    const div = document.createElement("div");
-    div.className="message";
-
-    div.innerHTML=
-      "<b>"+data.username+"</b>: "+data.text+
-      "<br><button onclick='likePost(\""+d.id+"\")'>Like ("+data.likes+")</button>"+
-      "<div class='small'>Comments coming soon...</div>";
-
-    postsDiv.appendChild(div);
-  });
-});
-
-window.likePost = async function(id){
-  const postRef = doc(db,"posts",id);
-  await updateDoc(postRef,{
-    likes:increment(1)
-  });
-}
+});  
 
 </script>
 
