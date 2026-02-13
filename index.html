@@ -1,150 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>B-MortexChat</title>
-
+<title>Jump Game</title>
 <style>
 body{
-  font-family: Arial;
-  margin:0;
-  background:url('https://images.unsplash.com/photo-1501785888041-af3ef285b470') no-repeat center center fixed;
-  background-size:cover;
-}
-
-header{
-  background:rgba(0,0,0,0.8);
-  color:white;
-  padding:15px;
-  text-align:center;
-  font-size:22px;
-}
-
-.container{
-  width:95%;
-  max-width:600px;
-  margin:auto;
-  margin-top:15px;
-  background:rgba(255,255,255,0.95);
-  padding:15px;
-  border-radius:10px;
-}
-
-#messages{
-  height:250px;
-  overflow-y:auto;
-  border:1px solid #ccc;
-  padding:10px;
-  margin-bottom:10px;
-}
-
-.message{
-  background:#e4e4e4;
-  padding:6px;
-  margin:6px 0;
-  border-radius:6px;
-}
-
-button{
-  padding:6px;
-  margin:4px 0;
   background:#111;
-  color:white;
-  border:none;
-  cursor:pointer;
+  margin:0;
+  overflow:hidden;
 }
 
-input{
-  padding:6px;
-  margin:4px 0;
+#game{
+  position:relative;
   width:100%;
+  height:300px;
+  background:#222;
+  overflow:hidden;
 }
 
-.small{
-  font-size:12px;
-  color:gray;
+#ball{
+  width:40px;
+  height:40px;
+  background:lime;
+  border-radius:50%;
+  position:absolute;
+  bottom:0;
+  left:50px;
+}
+
+#block{
+  width:30px;
+  height:50px;
+  background:red;
+  position:absolute;
+  bottom:0;
+  right:-30px;
+  animation:move 2s linear infinite;
+}
+
+@keyframes move{
+  0%{ right:-30px;}
+  100%{ right:100%;}
 }
 </style>
 </head>
-
 <body>
 
-<header>B-MortexChat</header>
+<h2 style="color:white;text-align:center;">Jump Game 🎮</h2>
 
-<div class="container">
-
-<input type="text" id="username" placeholder="Username yawe">
-
-<h3>Group Chat</h3>
-<div id="messages"></div>
-
-<input type="text" id="messageInput" placeholder="Andika message...">
-<button onclick="sendMessage()">Send</button>
-
-<hr>
-
-<h3>Create Post</h3>
-<input type="text" id="postInput" placeholder="Andika post...">
-<button onclick="createPost()">Post</button>
-
-<div id="posts"></div>
-
+<div id="game">
+  <div id="ball"></div>
+  <div id="block"></div>
 </div>
 
-<script type="module">
+<script>
+const ball = document.getElementById("ball");
+const block = document.getElementById("block");
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, onValue } 
-from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+document.addEventListener("click", function(){
+  jump();
+});
 
-const firebaseConfig = {
-apiKey:"AIzaSyD0R_RFe0T-gWv867QhL3ROEVwBOl4EZcA",
-authDomain: "b-mortexchat-fe518.firebaseapp.com",
-projectId: "b-mortexchat-fe518",
-storageBucket: "b-mortexchat-fe518.firebasestorage.app",
- messagingSenderId: "216206912732", appId: "1:216206912732:web:24c12bb87d1d88c43e1819",
-  measurementId: "G-BB3XXD82BW",
- databaseURL: "https://b-mortexchat-fe518-default-rtdb.firebaseio.com"
-};
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const usernameInput = document.getElementById("username");
-window.sendMessage = async function(){
-
-  const text = document.getElementById("messageInput").value;
-  const username = usernameInput.value || "Anonymous";
-
-if (username === "") {
-  alert("Andika username yawe!");
-  return;
+function jump(){
+  if(ball.classList != "jump"){
+    ball.classList.add("jump");
+    ball.style.transition = "bottom 0.3s";
+    ball.style.bottom = "100px";
+    setTimeout(function(){
+      ball.style.bottom = "0";
+      ball.classList.remove("jump");
+    },300);
+  }
 }
 
-if (text === "") return;
-  
+setInterval(function(){
+  let ballBottom = parseInt(window.getComputedStyle(ball).getPropertyValue("bottom"));
+  let blockLeft = parseInt(window.getComputedStyle(block).getPropertyValue("left"));
 
-  await push(ref(db, "groupChat"), {
-    username: username,
-    text: text,
-    createdAt: new Date().toISOString()
-  });
-
-  document.getElementById("messageInput").value = "";
-};
-onValue(ref(db, "groupChat"), (snapshot) => {
-  const messagesDiv = document.getElementById("messages");
-  messagesDiv.innerHTML = "";
-
-  snapshot.forEach((childSnapshot) => {
-    const data = childSnapshot.val();
-
-    const div = document.createElement("div");
-    div.className = "message";
-    div.innerHTML = "<b>" + data.username + "</b>: " + data.text;
-
-    messagesDiv.appendChild(div);
-  });
-});  
-
+  if(blockLeft < 90 && blockLeft > 40 && ballBottom < 40){
+    alert("Game Over!");
+  }
+},10);
 </script>
 
 </body>
